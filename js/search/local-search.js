@@ -1,170 +1,110 @@
-// A local search script with the help of
-// [hexo-generator-search](https://github.com/PaicHyperionDev/hexo-generator-search)
-// Copyright (C) 2015
-// Joseph Pan <http://github.com/wzpan>
-// Shuhao Mao <http://github.com/maoshuhao>
-// This library is free software; you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as
-// published by the Free Software Foundation; either version 2.1 of the
-// License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301 USA
-//
-// Modified by:
-// Pieter Robberechts <http://github.com/probberechts>
-
-/*exported searchFunc*/
-var searchFunc = function(path, filter, wrapperId, searchId, contentId) {
-
-  function getAllCombinations(keywords) {
-    var i, j, result = [];
-
-    for (i = 0; i < keywords.length; i++) {
-        for (j = i + 1; j < keywords.length + 1; j++) {
-            result.push(keywords.slice(i, j).join(" "));
+$(function () {
+  var loadFlag = false
+  $('a.social-icon.search').on('click', function () {
+    $('body').css('width', '100%')
+    $('body').css('overflow', 'hidden')
+    $('.search-dialog').velocity('stop')
+      .velocity('transition.expandIn', {
+        duration: 300,
+        complete: function () {
+          $('#local-search-input input').focus()
         }
+      })
+    $('.search-mask').velocity('stop')
+      .velocity('transition.fadeIn', {
+        duration: 300
+      })
+    if (!loadFlag) {
+      search(GLOBAL_CONFIG.localSearch.path)
+      loadFlag = true
     }
-    return result;
+
+    // shortcut: ESC
+    document.addEventListener('keydown', function f(event) {
+      if (event.code === 'Escape') {
+        closeSearch()
+        document.removeEventListener('keydown', f)
+      }
+    })
+  })
+
+  var closeSearch = function () {
+    $('body').css('overflow', 'auto')
+    $('.search-dialog').velocity('stop')
+      .velocity('transition.expandOut', {
+        duration: 300
+      })
+    $('.search-mask').velocity('stop')
+      .velocity('transition.fadeOut', {
+        duration: 300
+      })
   }
+  $('.search-mask, .search-close-button').on('click', closeSearch)
 
-  $.ajax({
-    url: path,
-    dataType: "json",
-    success: function(jsonResponse) {
-      var datas = jsonResponse;
-      var $input = document.getElementById(searchId);
-      if (!$input) { return; }
-      var $resultContent = document.getElementById(contentId);
-      var $wrapper = document.getElementById(wrapperId);
-
-      $input.addEventListener("input", function(){
-        var resultList = [];
-        var keywords = getAllCombinations(this.value.trim().toLowerCase().split(" "))
-          .sort(function(a,b) { return b.split(" ").length - a.split(" ").length; });
-        $resultContent.innerHTML = "";
-        if (this.value.trim().length <= 0) {
-          $wrapper.setAttribute('searching', 'false');
-          return;
-        }
-        $wrapper.setAttribute('searching', 'true');
-        // perform local searching
-        datas.forEach(function(data) {
-          if (!data.content?.trim().length) { return }
-          var matches = 0;
-          if (filter && !data.path.includes(filter)) { return }
-          var dataTitle = data.title?.trim() || 'Untitled';
-          var dataTitleLowerCase = dataTitle.toLowerCase();
-          var dataContent = data.content;
-          var dataContentLowerCase = dataContent.toLowerCase();
-          var dataUrl = data.path.startsWith('//') ? data.path.slice(1) : data.path; // 避免文章设置永久链接导致点击打开失败
-          var indexTitle = -1;
-          var indexContent = -1;
-          var firstOccur = -1;
-          // only match artiles with not empty contents
-          if (dataContent !== "") {
-            keywords.forEach(function(keyword) {
-              indexTitle = dataTitleLowerCase.indexOf(keyword);
-              indexContent = dataContentLowerCase.indexOf(keyword);
-
-              if( indexTitle >= 0 || indexContent >= 0 ){
-                matches += 1;
-                if (indexContent < 0) {
-                  indexContent = 0;
-                }
-                if (firstOccur < 0) {
-                  firstOccur = indexContent;
-                }
-              }
-            });
+  function search(path) {
+    $.ajax({
+      url: GLOBAL_CONFIG.root + path,
+      dataType: 'xml',
+      success: function (xmlResponse) {
+        // get the contents from search data
+        var datas = $('entry', xmlResponse).map(function () {
+          return {
+            title: $('title', this).text(),
+            content: $('content', this).text(),
+            url: $('url', this).text()
           }
-          // show search results
-          if (matches > 0) {
-            var searchResult = {};
-            searchResult.rank = matches;
-            searchResult.str = "<li><a href='"+ dataUrl +"'><span class='search-result-title'>"+ dataTitle +"</span>";
-            if (firstOccur >= 0) {
-              // cut out 100 characters
-              var start = firstOccur - 20;
-              var end = firstOccur + 80;
-
-              if(start < 0){
-                start = 0;
-              }
-
-              if(start == 0){
-                end = 100;
-              }
-
-              if(end > dataContent.length){
-                end = dataContent.length;
-              }
-
-              var matchContent = dataContent.substring(start, end);
-
-              // highlight all keywords
-              var regS = new RegExp(keywords.join("|"), "gi");
-              matchContent = matchContent.replace(regS, function(keyword) {
-                return "<span class=\"search-keyword\">"+keyword+"</span>";
-              });
-
-              searchResult.str += "<p class=\"search-result-content\">" + matchContent +"...</p>";
+        }).get()
+        var $input = $('#local-search-input input')[0]
+        var $resultContent = $('#local-hits')[0]
+        $input.addEventListener('input', function () {
+          var str = '<div class="search-result-list">'
+          var keywords = this.value.trim().toLowerCase().split(/[\s]+/)
+          $resultContent.innerHTML = ''
+          if (this.value.trim().length <= 0) {
+            $('.local-search-stats__hr').hide()
+            return
+          }
+          var count = 0
+          // perform local searching
+          datas.forEach(function (data) {
+            var isMatch = true
+            var dataTitle = data.title.trim().toLowerCase()
+            var dataContent = data.content.trim().replace(/<[^>]+>/g, '').toLowerCase()
+            var dataUrl = data.url
+            var indexTitle = -1
+            var indexContent = -1
+            // only match artiles with not empty titles and contents
+            if (dataTitle !== '' && dataContent !== '') {
+              keywords.forEach(function (keyword, i) {
+                indexTitle = dataTitle.indexOf(keyword)
+                indexContent = dataContent.indexOf(keyword)
+                if (indexTitle < 0 && indexContent < 0) {
+                  isMatch = false
+                } else {
+                  if (indexContent < 0) {
+                    indexContent = 0
+                  }
+                }
+              })
             }
-            searchResult.str += "</a></li>";
-            resultList.push(searchResult);
-          }
-        });
-        if (resultList.length) {
-          resultList.sort(function(a, b) {
-              return b.rank - a.rank;
-          });
-          var result ="<ul class=\"search-result-list\">";
-          for (var i = 0; i < resultList.length; i++) {
-            result += resultList[i].str;
-          }
-          result += "</ul>";
-          $resultContent.innerHTML = result;
-        }
-      });
-    }
-  });
-};
+            // show search results
+            if (isMatch) {
+              if (! dataUrl.startsWith('/')) {
+                dataUrl = '/' + dataUrl
+              }
 
-utils.jq(() => {
-  var $inputArea = $("input#search-input");
-    if ($inputArea.length == 0) {
-      return;
-    }
-    var $resultArea = document.querySelector("div#search-result");
-    $inputArea.focus(function() {
-      var path = ctx.search.path;
-      if (path.startsWith('/')) {
-        path = path.substring(1);
+              str += '<div class="local-search__hit-item"><a href="' + dataUrl + '" class="search-result-title">' + dataTitle + '</a>' + '</div>'
+              count += 1
+              $('.local-search-stats__hr').show()
+            }
+          })
+          if (count === 0) {
+            str += '<div id="local-search__hits-empty">' + GLOBAL_CONFIG.localSearch.languages.hits_empty.replace(/\$\{query}/, this.value.trim()) +
+              '</div>'
+          }
+          $resultContent.innerHTML = str
+        })
       }
-      path = ctx.root + path;
-      const filter = $inputArea.attr('data-filter') || '';
-      searchFunc(path, filter, 'search-wrapper', 'search-input', 'search-result');
-    });
-    $inputArea.keydown(function(e) {
-      if (e.which == 13) {
-        e.preventDefault();
-      }
-    });
-    var observer = new MutationObserver(function(mutationsList, observer) {
-      if (mutationsList.length == 1) {
-        if (mutationsList[0].addedNodes.length) {
-          $('.search-wrapper').removeClass('noresult');
-        } else if (mutationsList[0].removedNodes.length) {
-          $('.search-wrapper').addClass('noresult');
-        }
-      }
-    });
-    observer.observe($resultArea, { childList: true });
-  });
+    })
+  }
+})
