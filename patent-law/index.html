@@ -1366,59 +1366,68 @@ const RULES_TEXT = `
 
 const lawDB = {};
 
-// 【修复1】采用按行构建的策略，防止正则提取时误将“章节”标题吸入上一条文中
 function buildDB(text, prefix) {
     const lines = text.split('\n');
     let currentArtNum = null;
     let currentContent = [];
+    let currentKuanIdx = 0; // 【修复】引入“款”的真实层级追踪
 
     lines.forEach(line => {
         line = line.trim();
         if (!line) return;
 
-        // 遇到章节名直接跳过，不录入法条正文
+        // 遇到章节名直接跳过
         if (line.match(/^第[一二三四五六七八九十百千万零]+章/)) return;
 
         let tiaoMatch = line.match(/^第([一二三四五六七八九十百千万零]+)条/);
         if (tiaoMatch) {
-            // 保存上一条
+            // 结算并保存上一条
             if (currentArtNum) {
                 lawDB[`${prefix}-${currentArtNum}`] = {
                     title: `《${prefix === '专利法' ? '专利法' : '实施细则'}》第${currentArtNum}条`,
-                    content: currentContent.map(p => `<p>${p}</p>`).join('')
+                    content: currentContent.map(obj => `<p data-kuan="${obj.kuan}">${obj.text}</p>`).join('')
                 };
             }
+            // 开启新一条记录
             currentArtNum = tiaoMatch[1];
-            currentContent = [line]; // 开启新一条记录
+            currentKuanIdx = 1; // 条文的第一句话永远是第一款
+            currentContent = [{ text: line, kuan: currentKuanIdx }];
         } else {
             // 归属当前条款的内容
-            if (currentArtNum) currentContent.push(line);
+            if (currentArtNum) {
+                // 【核心修复】如果本行不是以（一）这种“项”开头的，说明是新的一“款”，编号才+1
+                if (!line.match(/^[（\(][一二三四五六七八九十]+[）\)]/)) {
+                    currentKuanIdx++;
+                }
+                currentContent.push({ text: line, kuan: currentKuanIdx });
+            }
         }
     });
     // 收尾最后一条
     if (currentArtNum) {
         lawDB[`${prefix}-${currentArtNum}`] = {
             title: `《${prefix === '专利法' ? '专利法' : '实施细则'}》第${currentArtNum}条`,
-            content: currentContent.map(p => `<p>${p}</p>`).join('')
+            content: currentContent.map(obj => `<p data-kuan="${obj.kuan}">${obj.text}</p>`).join('')
         };
     }
 }
 
-// 注意：由于上面替换为了精简测试文本，如果你复制回你自己的完整文本，这里依然生效
+// 建立索引数据库
 buildDB(PATENT_LAW_TEXT, "专利法");
 buildDB(RULES_TEXT, "细则");
 
-// 【修复2 & 3】增强状态机，追踪“当前条文号”和“当前段落号”
+// ==========================================
+// 3. 页面渲染与超链接植入
+// ==========================================
 function renderContent(text) {
     const container = document.getElementById('content-render');
     let htmlStr = '';
     
-    // 全局上下文变量
     let globalSource = '细则'; 
-    let currentArticleNum = null; // 当前正在渲染的第几条
-    let paragraphIndex = 0;       // 当前正在渲染的第几款 (1为第一款)
+    let currentArticleNum = null; 
+    let paragraphIndex = 0;       
     
-    const numMapInv = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'七', 8:'八', 9:'九', 10:'十'};
+    const numMapInv = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'七', 8:'八', 9:'九', 10:'十', 11:'十一', 12:'十二', 13:'十三', 14:'十四', 15:'十五'};
 
     const lines = text.split('\n');
     lines.forEach(line => {
@@ -1436,14 +1445,16 @@ function renderContent(text) {
         let headerMatch = pContent.match(/^(第[一二三四五六七八九十百千万零]+条)\s*/);
         if (headerMatch) {
             currentArticleNum = headerMatch[1].replace('第', '').replace('条', '');
-            paragraphIndex = 1; // 条文的开头永远是第一款
+            paragraphIndex = 1; 
             headerHtml = `<b>${headerMatch[1]}</b> `;
             pContent = pContent.substring(headerMatch[0].length);
         } else {
-            paragraphIndex++; // 如果没有“第X条”开头，说明是该条文内的下一段（即下一款）
+            // 【核心修复】渲染层逻辑同步：遇到“项”，款的索引号不增加
+            if (!pContent.match(/^[（\(][一二三四五六七八九十]+[）\)]/)) {
+                paragraphIndex++;
+            } 
         }
         
-        // 升级版正则：捕捉“前款”、“本条”、“前两款”等相对指代
         const linkRegex = /(专利法|本法|本细则)?\s*(第[一二三四五六七八九十百千万零]+条|本条)?\s*(第[一二三四五六七八九十]+款|前两款|前款)?\s*(第[（(]?[一二三四五六七八九十]+[）)]?项)?/g;
         
         let lastMatchEnd = 0;
@@ -1452,9 +1463,14 @@ function renderContent(text) {
         let chainArticle = null;
 
         pContent = pContent.replace(linkRegex, (match, source, tiao, kuan, xiang, offset) => {
-            // 过滤无意义的单纯触发
             if (!match.trim() || match.trim() === '本法' || match.trim() === '专利法' || match.trim() === '本细则') return match; 
             
+            // 【核心修复】向左探测：如果是外部条约、协议、法律，放弃加链接
+            let prevText = pContent.substring(Math.max(0, offset - 15), offset);
+            if (/条约|协定|公约|法》/.test(prevText)) {
+                return match; 
+            }
+
             let textBetween = pContent.substring(lastMatchEnd, offset);
 
             if (!/^[、，,和或者至以及\s]*$/.test(textBetween)) {
@@ -1466,16 +1482,14 @@ function renderContent(text) {
             let resolvedSource = null;
             let resolvedArticle = null;
 
-            // 1. 决断出处 (Source)
             if (source) {
                 resolvedSource = (source === '本细则') ? '细则' : '专利法';
             } else if (isValidChain && chainSource) {
                 resolvedSource = chainSource;
             } else {
-                resolvedSource = globalSource; // 孤立的引用默认指向自己所在的文案
+                resolvedSource = globalSource; 
             }
 
-            // 2. 决断条文 (Article)
             if (tiao) {
                 if (tiao === '本条') {
                     resolvedArticle = currentArticleNum;
@@ -1485,23 +1499,20 @@ function renderContent(text) {
             } else if (isValidChain && chainArticle) {
                 resolvedArticle = chainArticle;
             } else if (kuan || xiang) {
-                // 如果只说了“第二款”或“第(一)项”，则指向当前条文
                 resolvedArticle = currentArticleNum;
             }
 
-            // 如果连目标条文都找不到，直接放弃渲染（防止错误生成）
             if (!resolvedArticle) {
                 lastMatchEnd = offset + match.length;
                 isValidChain = false; 
                 return match; 
             }
 
-            // 3. 处理特殊的“款” (Kuan) 的翻译机制
             let subStr = '';
             if (kuan === '前款') {
-                let prevIdx = paragraphIndex - 1; // 寻找真正的上一款
+                let prevIdx = paragraphIndex - 1;
                 if (prevIdx > 0 && numMapInv[prevIdx]) {
-                    subStr += `第${numMapInv[prevIdx]}款`; // 翻译给下游高亮器，如“第一款”
+                    subStr += `第${numMapInv[prevIdx]}款`;
                 } else {
                     subStr += kuan; 
                 }
@@ -1511,7 +1522,6 @@ function renderContent(text) {
 
             if (xiang) subStr += xiang;
 
-            // 验证通过，维护状态机
             isValidChain = true;
             chainSource = resolvedSource;
             chainArticle = resolvedArticle;
@@ -1531,7 +1541,7 @@ function renderContent(text) {
 renderContent(RULES_TEXT);
 
 // ==========================================
-// 3. 悬浮窗及款项精准高亮交互
+// 4. 悬浮窗及款项精准高亮交互
 // ==========================================
 const tooltip = document.getElementById('ref-tooltip');
 const tooltipTitle = document.getElementById('ref-title');
@@ -1553,31 +1563,32 @@ document.querySelectorAll('.ref-link').forEach(link => {
             if (subInfo) {
                 let highlighted = false;
                 
-                // 优先高亮“项” 
+                // 项的高亮匹配：兼容了新增的 data-kuan 属性标签
                 let xiangMatch = subInfo.match(/第[（(]?([一二三四五六七八九十]+)[）)]?项/);
                 if (xiangMatch) {
                     let num = xiangMatch[1];
-                    let regex = new RegExp(`(<p>)([（\\(]${num}[）\\)].*?)</p>`, 'g');
+                    let regex = new RegExp(`(<p[^>]*>)([（\\(]${num}[）\\)].*?)</p>`, 'g');
                     if (regex.test(contentHtml)) {
                         contentHtml = contentHtml.replace(regex, `$1<span class="highlight-mark">$2</span></p>`);
                         highlighted = true;
                     }
                 }
                 
-                // 高亮整“款” 
+                // 【核心修复】款的高亮匹配：根据打好的 data-kuan 标签全块捕获
                 if (!highlighted) {
                     let kuanMatch = subInfo.match(/第([一二三四五六七八九十]+)款/);
                     if (kuanMatch) {
-                        const numMap = {'一':1, '二':2, '三':3, '四':4, '五':5, '六':6, '七':7, '八':8, '九':9, '十':10};
-                        let idx = numMap[kuanMatch[1]] - 1; 
+                        const numMap = {'一':1, '二':2, '三':3, '四':4, '五':5, '六':6, '七':7, '八':8, '九':9, '十':10, '十一':11, '十二':12, '十三':13, '十四':14, '十五':15};
+                        let targetNum = numMap[kuanMatch[1]]; 
                         
                         let tempDiv = document.createElement('div');
                         tempDiv.innerHTML = contentHtml;
-                        let ps = tempDiv.querySelectorAll('p');
                         
-                        if (ps[idx]) {
-                            ps[idx].innerHTML = `<span class="highlight-mark">${ps[idx].innerHTML}</span>`;
-                        }
+                        // 选中所有从属于这一款的 <p> (包括引言和后续所有的项目列表)
+                        let ps = tempDiv.querySelectorAll(`p[data-kuan="${targetNum}"]`);
+                        ps.forEach(p => {
+                            p.innerHTML = `<span class="highlight-mark">${p.innerHTML}</span>`;
+                        });
                         contentHtml = tempDiv.innerHTML;
                     }
                 }
