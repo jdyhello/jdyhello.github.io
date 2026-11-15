@@ -1,0 +1,511 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="Welcome to my Blog! My name is Zhang Shun, and I'm a graduate student at School of Transnational Law (STL), Peking University. I'm interested in linguistics, technology, and sports. I have experience on using softwares such as Stata, LATEX, Python, R, and SPSS."><meta name="keywords" content=""><meta name="author" content="Zhang Shun"><meta name="copyright" content="Zhang Shun"><title>知识理应共享 | Shun's Website</title><link rel="shortcut icon" href="/melody-favicon.ico"><link rel="stylesheet" href="/css/index.css?version=1.9.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css?version=1.9.1"><meta name="format-detection" content="telephone=no"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><script src="https://v1.hitokoto.cn/?encode=js&amp;charset=utf-8&amp;select=.footer_custom_text" defer></script><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  hexoVersion: '7.3.0'
+} </script><meta name="generator" content="Hexo 7.3.0"></head><body><canvas class="fireworks"></canvas><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar" data-display="false"><div class="author-info"><div class="author-info__avatar text-center"><img src="https://avatars.githubusercontent.com/u/102511343?s=96&amp;v=4"></div><div class="author-info__name text-center">Zhang Shun</div><div class="author-info__description text-center">Welcome to my Blog! My name is Zhang Shun, and I'm a graduate student at School of Transnational Law (STL), Peking University. I'm interested in linguistics, technology, and sports. I have experience on using softwares such as Stata, LATEX, Python, R, and SPSS.</div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">Articles</span><span class="pull-right">10</span></a><a class="author-info-articles__tags article-meta" href="/tags"><span class="pull-left">Tags</span><span class="pull-right">7</span></a></div><hr><div class="author-info-links"><div class="author-info-links__title text-center">Links</div><a class="author-info-links__name text-center" target="_blank" rel="noopener" href="https://github.com/jdyhello">Github</a><a class="author-info-links__name text-center" target="_blank" rel="noopener" href="https://www.instagram.com/jdyhello/">Instagram</a></div></div></div><nav id="nav" style="background-image: url(https://cn.bing.com/th?id=OHR.BahamasSpace_ZH-CN8053657656_UHD.jpg)"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">Shun's Website</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus">   <a class="site-page" href="/">Home</a><a class="site-page" href="/about">About</a><a class="site-page" href="/archives">Archives</a><a class="site-page" href="/tags">Tags</a><a class="site-page" href="/categories">Categories</a></span><span class="pull-right"></span></div><div id="site-info"><div id="site-title">Shun's Website</div><div id="site-sub-title">知识理应共享</div><div id="site-social-icons"><a class="social-icon" href="https://github.com/jdyhello" target="_blank" rel="noreferrer noopener nofollow"><i class="fa-github fa"></i></a><a class="social-icon" href="https://www.instagram.com/jdyhello/" target="_blank" rel="noreferrer noopener nofollow"><i class="fa-instagram fa"></i></a></div></div></nav><div id="content-outer"><div class="layout" id="content-inner"><article id="page"><h1></h1><div class="article-container"><!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>立体拼合 · 15白+3黑（18块）｜可旋转三维演示</title>
+<style>
+  :root{
+    --ink:#1e2228; --ink2:#5c6673; --ink3:#98a1ab;
+    --line:#e3e6ea; --bg:#fbfbfa;
+    --accent:#2f6fb2; --accent-soft:#eef4fb;
+  }
+  *,*::before,*::after{box-sizing:border-box;}
+  html{height:100%;}
+  body{
+    margin:0; height:100%; color:var(--ink); background:var(--bg);
+    font-family:"Songti SC","Source Han Serif SC","Noto Serif SC",Georgia,"Microsoft YaHei",serif;
+    -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;
+    color-scheme:light;
+  }
+  #app{display:flex; height:100vh; height:100dvh; overflow:hidden;}
+
+  /* ---------- 画布区 ---------- */
+  #stage{position:relative; flex:1 1 auto; min-width:0; min-height:0; overflow:hidden;}
+  #cv{display:block; width:100%; height:100%; cursor:grab;
+      touch-action:none; -webkit-tap-highlight-color:transparent; user-select:none;}
+  #cv.drag{cursor:grabbing;}
+
+  #hint{position:absolute; left:22px; top:16px; pointer-events:none;
+        font-size:12px; color:#9aa3ad; letter-spacing:.03em; line-height:1.7;}
+  #hint .m{display:none;}
+
+  #bar{position:absolute; left:50%; bottom:18px; transform:translateX(-50%);
+       display:flex; align-items:center; gap:10px;
+       padding:9px 12px; border-radius:12px; background:rgba(255,255,255,.95);
+       border:1px solid var(--line); box-shadow:0 4px 22px rgba(24,32,44,.07);}
+  button{font-family:inherit; font-size:12.5px; letter-spacing:.02em; color:var(--ink);
+         padding:7px 13px; border-radius:8px; border:1px solid var(--line);
+         background:#fff; cursor:pointer; white-space:nowrap;
+         transition:background .15s,border-color .15s,color .15s;}
+  button:hover{border-color:#c3d0dd; background:#f7fafd;}
+  button:active{transform:translateY(1px);}
+  button.on{background:var(--accent); border-color:var(--accent); color:#fff;}
+  #scrub{width:190px; accent-color:#2f6fb2; margin:0;}
+
+  /* ---------- 文字区 ---------- */
+  #side{flex:0 0 358px; width:358px; background:#fff; border-left:1px solid var(--line);
+        overflow-y:auto; padding:22px 24px 30px; -webkit-overflow-scrolling:touch;}
+  #side h1{margin:0 0 8px; font-size:15.5px; font-weight:600; letter-spacing:.05em;}
+  #side .sub{margin:0 0 14px; font-size:12.8px; line-height:1.72; color:var(--ink2);}
+  .legend{margin:0 0 16px; padding:11px 13px; border:1px solid var(--line);
+          border-radius:10px; background:#fcfcfb; font-size:12.4px; line-height:1.92;
+          color:var(--ink2);}
+  .dot{display:inline-block; width:8px; height:8px; border-radius:50%;
+       margin-right:7px; vertical-align:1px;}
+  #side h2{margin:0 0 9px; font-size:13.3px; font-weight:600; letter-spacing:.05em;}
+  #side h2 em{font-style:normal; font-weight:400; color:var(--accent); letter-spacing:0;}
+  #side ol{margin:0; padding-left:1.3em; font-size:12.7px; line-height:1.78;}
+  #side li{margin-bottom:9px;}
+  .key{color:var(--accent); font-weight:600;}
+  .howto{margin:16px 0 0; font-size:12.3px; line-height:1.72; color:var(--ink2);}
+  .howto b{display:block; margin-bottom:4px; font-size:13px; color:var(--ink); font-weight:600;
+           letter-spacing:.04em;}
+  .howto p{margin:0;}
+  .ans{margin-top:14px; padding:12px 13px; border-radius:10px;
+       background:var(--accent-soft); border:1px solid #d6e4f3;
+       font-size:13px; line-height:1.8;}
+  .ans .big{font-size:14.5px;}
+  .note{color:var(--ink2); font-size:12px;}
+
+  /* ---------- 手机 / 窄屏：上下堆叠 ---------- */
+  @media (max-width:880px){
+    #app{flex-direction:column;}
+    #stage{flex:0 0 auto; height:55dvh; min-height:250px; max-height:68dvh;}
+    #side{flex:1 1 auto; width:auto; border-left:0; border-top:1px solid var(--line);
+          padding:18px 18px calc(30px + env(safe-area-inset-bottom));}
+    #side h1{font-size:15px;}
+    #side .sub{font-size:13px; margin-bottom:14px;}
+    .legend{margin-bottom:18px; font-size:12.5px;}
+    #side ol{font-size:13px;}
+    #hint{left:16px; top:12px; font-size:11.5px;}
+    #hint .d{display:none;} #hint .m{display:inline;}
+    #bar{left:12px; right:12px; bottom:12px; transform:none;
+         display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:10px 11px;}
+    #scrub{grid-column:1 / -1; order:-1; width:100%; margin:0 0 2px;}
+    button{width:100%; padding:10px 4px; font-size:12.5px;}
+  }
+  /* 手机横屏：横向空间够，回到左右分栏，画布不被压扁 */
+  @media (max-width:900px) and (orientation:landscape){
+    #app{flex-direction:row;}
+    #stage{flex:1 1 auto; height:auto; min-height:0; max-height:none;}
+    #side{flex:0 0 300px; width:300px; border-left:1px solid var(--line);
+          border-top:0; padding:16px 18px calc(22px + env(safe-area-inset-bottom));}
+    #side h1{font-size:14.5px; margin-bottom:7px;}
+    #side .sub{font-size:12.5px; line-height:1.7; margin-bottom:12px;}
+    .legend{margin-bottom:14px; padding:9px 11px; font-size:12px; line-height:1.95;}
+    #side h2{font-size:13px; margin-bottom:8px;}
+    #side ol{font-size:12.5px; line-height:1.75;}
+    #side li{margin-bottom:8px;}
+    .howto{font-size:12px;}
+    .ans{font-size:12.5px; padding:11px 12px;}
+    #bar{left:12px; right:12px; bottom:10px; transform:none;
+         display:flex; gap:8px; padding:8px 10px;}
+    #scrub{width:auto; flex:1 1 auto; order:0; margin:0;}
+    button{width:auto; padding:8px 11px; font-size:12px;}
+    #hint{left:14px; top:10px; font-size:11px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <section id="stage">
+    <canvas id="cv" aria-label="可旋转的三维拼合演示"></canvas>
+    <div id="hint"><span class="d">拖动旋转 · 滚轮缩放</span><span class="m">单指旋转 · 双指缩放</span></div>
+    <div id="bar">
+      <button id="play">开始拼合</button>
+      <input id="scrub" type="range" min="0" max="1000" value="0" step="1" aria-label="拼接进度">
+      <button id="spin" class="on">自动旋转</button>
+      <button id="reset">复位视角</button>
+    </div>
+  </section>
+
+  <aside id="side">
+    <h1>立体拼合 · 15 白 + 3 黑</h1>
+    <p class="sub">整体由 18 个小正方体堆成，由 ①、②、③ 三块拼成。拖动模型可从任意角度核对每一格的凹凸。</p>
+
+    <div class="legend">
+      <div><span class="dot" style="background:#2f6fb2"></span>① 6 块（5 白 1 黑）</div>
+      <div><span class="dot" style="background:#c08a2e"></span>② 6 块（5 白 1 黑）</div>
+      <div><span class="dot" style="background:#4f8a5b"></span>③ 6 块（5 白 1 黑）</div>
+    </div>
+
+    <h2>解题思路 <em>／先数块，再定黑块，最后看缺口</em></h2>
+    <ol>
+      <li><b>数块数。</b>整体共 18 块，①、② 各 6 块，故 ③ 必为 <span class="key">6 块</span>（5 白 1 黑）。四项都是 6 块，光靠数块排不掉。</li>
+      <li><b>定黑块。</b>① 的黑块在后排高处、② 的黑块在正前柱顶，都是「压在白块上」的；剩下 ③ 的黑块在右侧两层柱的<span class="key">前上方</span>，只与一块相邻，是单面挂上去的。</li>
+      <li><b>看缺口。</b>①② 就位后（① 补左后、② 补正前），空位是「底层 3 块连成一排 + 第二层 2 块 + 右端前面挂 1 个黑块」。</li>
+    </ol>
+
+    <div class="ans">
+      把 ③ 转正，就是「5 块摆成 L 形底座、黑块压在拐角那一块上」，与 <b>D</b> 完全一致；
+      C 的黑块沿边挪了一格，抵住 ② 的位置；A、B 的黑块落在底层外侧，邻接关系也对不上。
+      <div class="big" style="margin-top:8px"><b>答案：D</b></div>
+      <div class="note" style="margin-top:6px">③ 在图中按拼入方向摆放，与 D 项图示方向不同，转动即可重合。</div>
+    </div>
+
+    <div class="howto">
+      <b>怎么看这个演示</b>
+      <p>散开时 ① 停在左上方、② 停在下方、③ 停在后方。点「开始拼合」，三块按 ①→②→③ 依次沿直线飞入，
+      每条路径都做过碰撞检查，过程中不会出现方块穿插；拖动滑块可以逐帧查看，也能倒放。</p>
+    </div>
+
+  </aside>
+</div>
+<script>
+const DATA = {"pieces": [{"name": "①", "cells": [[-1.0, 0.0, -0.0], [-1.0, 1.0, -0.0], [-1.0, 1.0, -1.0], [-1.0, 2.0, -1.0], [0.0, 1.0, -0.0], [0.0, 2.0, -1.0]], "colors": ["w", "w", "w", "w", "w", "b"], "dir": [-0.70711, 0.70711, 0.0], "t0": 0.0, "t1": 0.34, "labelColor": "#2f6fb2", "labelAt": [-1.0, 2.74, -1.0]}, {"name": "②", "cells": [[-1.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0], [0.0, 2.0, 1.0], [0.0, 0.0, -0.0], [1.0, 0.0, -0.0]], "colors": ["w", "w", "w", "b", "w", "w"], "dir": [0.0, -1.0, 0.0], "t0": 0.34, "t1": 0.68, "labelColor": "#c08a2e", "labelAt": [0.0, 2.74, 1.0]}, {"name": "③", "cells": [[-1.0, 0.0, -1.0], [0.0, 0.0, -1.0], [0.0, 1.0, -1.0], [1.0, 1.0, -0.0], [1.0, 0.0, -1.0], [1.0, 1.0, -1.0]], "colors": ["w", "w", "w", "b", "w", "w"], "dir": [0.0, 0.0, -1.0], "t0": 0.68, "t1": 1.0, "labelColor": "#4f8a5b", "labelAt": [0.0, 1.74, -1.0]}]};
+
+/* ================= 相机与投影 ================= */
+const cv  = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+
+const view = {
+  yaw: -0.66,          // 左右旋转
+  pitch: 0.58,         // 俯仰
+  p: 0                 // 拼接进度 0..1
+};
+let zoom = 1;          // 在自动适配基础上再乘的缩放系数
+
+/* 单位立方体的 6 个面：法向 + 4 个顶点（相对中心，边长 1） */
+const FACES = [
+  {n:[ 1,0,0], v:[[.5,-.5,-.5],[.5,.5,-.5],[.5,.5,.5],[.5,-.5,.5]]},
+  {n:[-1,0,0], v:[[-.5,-.5,.5],[-.5,.5,.5],[-.5,.5,-.5],[-.5,-.5,-.5]]},
+  {n:[0, 1,0], v:[[-.5,.5,.5],[.5,.5,.5],[.5,.5,-.5],[-.5,.5,-.5]]},
+  {n:[0,-1,0], v:[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,-.5,.5],[-.5,-.5,.5]]},
+  {n:[0,0, 1], v:[[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]]},
+  {n:[0,0,-1], v:[[-.5,.5,-.5],[.5,.5,-.5],[.5,-.5,-.5],[-.5,-.5,-.5]]}
+];
+const LIGHT = (() => {                       // 世界坐标下的平行光方向
+  const v = [0.38, 0.86, 0.34];
+  const L = Math.hypot(v[0], v[1], v[2]);
+  return v.map(x => x / L);
+})();
+
+function rot(p){                             // 绕 Y 轴偏航，再绕 X 轴俯仰
+  const cy = Math.cos(view.yaw), sy = Math.sin(view.yaw);
+  const x1 =  cy * p[0] + sy * p[2];
+  const z1 = -sy * p[0] + cy * p[2];
+  const cp = Math.cos(view.pitch), sp = Math.sin(view.pitch);
+  return [x1, cp * p[1] - sp * z1, sp * p[1] + cp * z1];
+}
+
+let W = 0, H = 0, DPR = 1;
+const cam  = {unit: 60, ox: 0, oy: 0};       // 当前显示参数（平滑跟随）
+const camT = {unit: 60, ox: 0, oy: 0};       // 目标显示参数
+
+function toScreen(p){
+  const r = rot(p);
+  return [cam.ox + r[0] * cam.unit, cam.oy - r[1] * cam.unit, r[2]];
+}
+
+function safeRect(){
+  const narrow = W < 700;
+  return {
+    left: 18,
+    top: narrow ? 52 : 62,
+    right: W - 18,
+    bottom: H - (narrow ? 106 : 78)
+  };
+}
+
+/* 把当前外形自动缩放、居中到可视安全区 */
+function fitTargets(cubes){
+  if (!cubes.length) return;
+  let minx = 1e9, maxx = -1e9, miny = 1e9, maxy = -1e9;
+  cubes.forEach(c => {
+    for (const sx of [-.5, .5])
+      for (const sy of [-.5, .5])
+        for (const sz of [-.5, .5]){
+          const r = rot([c.x + sx, c.y + sy, c.z + sz]);
+          if (r[0] < minx) minx = r[0];
+          if (r[0] > maxx) maxx = r[0];
+          if (r[1] < miny) miny = r[1];
+          if (r[1] > maxy) maxy = r[1];
+        }
+  });
+  const r = safeRect();
+  const availW = Math.max(120, r.right - r.left - 24);
+  const availH = Math.max(120, r.bottom - r.top - 24);
+  const unit = Math.min(availW / Math.max(.6, maxx - minx),
+                        availH / Math.max(.6, maxy - miny));
+  camT.unit = Math.min(unit, 250);
+  camT.ox = (r.left + r.right) / 2 - (minx + maxx) / 2 * camT.unit;
+  camT.oy = (r.top + r.bottom) / 2 + (miny + maxy) / 2 * camT.unit;
+}
+
+/* ================= 组装 ================= */
+const easeIO = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+/* 散开距离随画布宽度自适应：手机竖屏收紧一点，免得整体被缩得太小 */
+const Dsz = {cur: 4.0, tgt: 4.0};
+function pickDistance(){
+  Dsz.tgt = (W < 560) ? 3.4 : 4.0;
+}
+
+/* 返回 [{x,y,z,dark,alpha}]：三段互不重叠，同一时刻只有一块在动 */
+function piecesState(){
+  const out = [];
+  DATA.pieces.forEach(pc => {
+    const span = Math.max(1e-6, pc.t1 - pc.t0);
+    const u = Math.max(0, Math.min(1, (view.p - pc.t0) / span));
+    const k = 1 - easeIO(u);                       // 1 = 仍在散开位，0 = 已就位
+    const d = Dsz.cur * k;
+    const moving = u > 0.001 && u < 0.999;          // 正在飞入
+    pc.cells.forEach((c, idx) => {
+      out.push({
+        x: c[0] + pc.dir[0] * d,
+        y: c[1] + pc.dir[1] * d,
+        z: c[2] + pc.dir[2] * d,
+        dark: pc.colors[idx] === 'b',
+        moving, tint: pc.labelColor
+      });
+    });
+  });
+  return out;
+}
+
+/* ================= 绘制 ================= */
+function draw(){
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+
+  const g = ctx.createRadialGradient(W * .5, H * .44, 30, W * .5, H * .44, Math.max(W, H) * .82);
+  g.addColorStop(0, '#ffffff');
+  g.addColorStop(1, '#f2f3f4');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+
+  /* 按「面的中心」做深度排序：相邻两块贴得很近时，逐块排序会颠倒前后，
+     逐面排序才能让压在前面的面确实盖住后面的面。 */
+  const quads = [];
+  piecesState().forEach(c => {
+    FACES.forEach(f => {
+      const n = rot(f.n);
+      if (n[2] <= 0.02) return;
+      quads.push({
+        c, n, v: f.v,
+        depth: rot([c.x + f.n[0] * 0.5,
+                    c.y + f.n[1] * 0.5,
+                    c.z + f.n[2] * 0.5])[2]
+      });
+    });
+  });
+  quads.sort((a, b) => a.depth - b.depth);
+
+  const lw = Math.max(0.85, Math.min(1.25, cam.unit / 58));
+  quads.forEach(f => {
+    const c = f.c;
+    {
+      const lam = Math.max(0, f.n[0] * LIGHT[0] + f.n[1] * LIGHT[1] + f.n[2] * LIGHT[2]);
+      let col;
+      if (c.dark){
+        const v = Math.round(16 + 44 * lam);
+        col = 'rgb(' + v + ',' + v + ',' + v + ')';
+      } else {
+        const v = Math.round(204 + 50 * lam);
+        col = 'rgb(' + Math.min(255, v) + ',' + Math.min(255, v) + ',' + Math.min(252, v - 3) + ')';
+      }
+      ctx.beginPath();
+      f.v.forEach((pt, i) => {
+        const s = toScreen([c.x + pt[0], c.y + pt[1], c.z + pt[2]]);
+        i ? ctx.lineTo(s[0], s[1]) : ctx.moveTo(s[0], s[1]);
+      });
+      ctx.closePath();
+      ctx.fillStyle = col;
+      ctx.fill();
+      ctx.lineJoin = 'round';
+      if (c.moving){                                // 正在飞入的块：描边换成部件色，边界一目了然
+        ctx.lineWidth = lw + 0.9;
+        ctx.strokeStyle = c.tint;
+      } else {
+        ctx.lineWidth = lw;
+        ctx.strokeStyle = c.dark ? 'rgba(0,0,0,.62)' : 'rgba(48,54,62,.62)';
+      }
+      ctx.stroke();
+    }
+  });
+
+  /* 部件标签：只在散开状态显示 */
+  DATA.pieces.forEach(pc => {
+    const span = Math.max(1e-6, pc.t1 - pc.t0);
+    const u = Math.max(0, Math.min(1, (view.p - pc.t0) / span));
+    const k = 1 - easeIO(u);
+    const alpha = Math.min(1, Math.max(0, (k - 0.55) * 3.2));   // 一开始移动就淡出，免得盖在块上
+    if (alpha < 0.05) return;
+    const d = Dsz.cur * k;
+    const s = toScreen([pc.labelAt[0] + pc.dir[0] * d,
+                        pc.labelAt[1] + pc.dir[1] * d,
+                        pc.labelAt[2] + pc.dir[2] * d]);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.font = '600 15px "Songti SC",Georgia,serif';
+    const tw = ctx.measureText(pc.name).width;
+    const w = tw + 19, h = 24, x = s[0] - w / 2, y = s[1] - h / 2, rad = 11;
+    ctx.beginPath();
+    ctx.moveTo(x + rad, y);
+    ctx.arcTo(x + w, y, x + w, y + h, rad);
+    ctx.arcTo(x + w, y + h, x, y + h, rad);
+    ctx.arcTo(x, y + h, x, y, rad);
+    ctx.arcTo(x, y, x + w, y, rad);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(255,255,255,.95)';
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = pc.labelColor + '77';
+    ctx.stroke();
+    ctx.fillStyle = pc.labelColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(pc.name, s[0], s[1] + .5);
+    ctx.restore();
+  });
+}
+
+/* ================= 尺寸 ================= */
+function resize(){
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  const r = cv.parentElement.getBoundingClientRect();
+  W = Math.max(1, Math.round(r.width));
+  H = Math.max(1, Math.round(r.height));
+  cv.width  = Math.round(W * DPR);
+  cv.height = Math.round(H * DPR);
+  pickDistance();
+  Dsz.cur = Dsz.tgt;
+  const cubes = piecesState();
+  fitTargets(cubes);
+  cam.unit = camT.unit; cam.ox = camT.ox; cam.oy = camT.oy;
+  draw();
+}
+
+/* ================= 交互：鼠标与触摸统一用 pointer ================= */
+const active = new Map();
+let pinchDist = 0;
+
+function pointerDistance(){
+  const pts = [...active.values()];
+  return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+}
+
+cv.addEventListener('pointerdown', e => {
+  cv.setPointerCapture(e.pointerId);
+  active.set(e.pointerId, {x: e.clientX, y: e.clientY});
+  if (active.size === 2){
+    pinchDist = pointerDistance();
+    cv.classList.remove('drag');
+  } else if (active.size === 1){
+    cv.classList.add('drag');
+  }
+});
+
+cv.addEventListener('pointermove', e => {
+  const p = active.get(e.pointerId);
+  if (!p) return;
+  const dx = e.clientX - p.x, dy = e.clientY - p.y;
+  p.x = e.clientX; p.y = e.clientY;
+
+  if (active.size >= 2){                       // 双指缩放
+    const d = pointerDistance();
+    if (pinchDist > 0 && d > 0) zoom = Math.max(0.5, Math.min(2.8, zoom * d / pinchDist));
+    pinchDist = d;
+    return;
+  }
+  view.yaw   += dx * 0.0074;
+  view.pitch  = Math.max(-0.12, Math.min(1.32, view.pitch + dy * 0.0060));
+});
+
+function endPointer(e){
+  active.delete(e.pointerId);
+  if (active.size < 2) pinchDist = 0;
+  if (active.size === 0) cv.classList.remove('drag');
+}
+cv.addEventListener('pointerup', endPointer);
+cv.addEventListener('pointercancel', endPointer);
+
+cv.addEventListener('wheel', e => {
+  e.preventDefault();
+  zoom = Math.max(0.5, Math.min(2.8, zoom * (1 - Math.sign(e.deltaY) * 0.08)));
+}, {passive: false});
+
+/* ================= 按钮 ================= */
+const scrub   = document.getElementById('scrub');
+const btnPlay = document.getElementById('play');
+const btnSpin = document.getElementById('spin');
+/* 手机上默认不自动旋转：省电，也不打扰拖动 */
+let spinning = !window.matchMedia('(max-width:880px)').matches;
+let playing = false;
+document.getElementById('spin').classList.toggle('on', spinning);
+
+scrub.addEventListener('input', () => {
+  view.p = scrub.value / 1000;
+  playing = false;
+  btnPlay.textContent = '开始拼合';
+});
+btnPlay.addEventListener('click', () => {
+  if (view.p > 0.985){ view.p = 0; scrub.value = 0; }
+  playing = true;
+  btnPlay.textContent = '拼合中…';
+});
+btnSpin.addEventListener('click', () => {
+  spinning = !spinning;
+  btnSpin.classList.toggle('on', spinning);
+});
+document.getElementById('reset').addEventListener('click', () => {
+  view.yaw = -0.66; view.pitch = 0.58; zoom = 1;
+});
+
+/* ================= 主循环 ================= */
+const DUR = 3600;                    // 三块依次飞入的总时长（毫秒）
+let last = performance.now();
+
+function loop(now){
+  const dt = Math.min(48, now - last);
+  last = now;
+
+  if (playing){
+    view.p = Math.min(1, view.p + dt / DUR);
+    scrub.value = Math.round(view.p * 1000);
+    if (view.p >= 1){ playing = false; btnPlay.textContent = '再看一次'; }
+  }
+  if (spinning && active.size === 0) view.yaw += dt * 0.00016;
+
+  Dsz.cur += (Dsz.tgt - Dsz.cur) * 0.12;
+
+  const cubes = piecesState();
+  fitTargets(cubes);
+  const k = 1 - Math.pow(0.93, dt / 16.7);
+  cam.unit += (camT.unit * zoom - cam.unit) * k;
+  cam.ox   += (camT.ox - cam.ox) * k;
+  cam.oy   += (camT.oy - cam.oy) * k;
+
+  draw();
+  requestAnimationFrame(loop);
+}
+
+/* 启动 */
+if (window.ResizeObserver){
+  new ResizeObserver(() => resize()).observe(cv.parentElement);
+} else {
+  window.addEventListener('resize', resize);
+}
+window.addEventListener('orientationchange', () => setTimeout(resize, 260));
+resize();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
+</div></article><nav id="pagination"><div class="pagination"></div></nav></div></div><footer class="footer-bg" style="background-image: url(https://cn.bing.com/th?id=OHR.BahamasSpace_ZH-CN8053657656_UHD.jpg)"><div class="layout" id="footer"><div class="copyright">&copy;2023 - 2026 By Zhang Shun</div><div class="framework-info"><span>Driven - </span><a target="_blank" rel="noopener" href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme - </span><a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="footer_custom_text">hitokoto</div><div class="busuanzi"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span><span></span></span><span class="footer-separator">|</span><span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="https://cdn.jsdelivr.net/npm/animejs@latest/lib/anime.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@latest/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-ui-pack@latest/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.9.1"></script><script src="/js/fancybox.js?version=1.9.1"></script><script src="/js/sidebar.js?version=1.9.1"></script><script src="/js/copy.js?version=1.9.1"></script><script src="/js/fireworks.js?version=1.9.1"></script><script src="/js/transition.js?version=1.9.1"></script><script src="/js/scroll.js?version=1.9.1"></script><script src="/js/head.js?version=1.9.1"></script><script>if(/Android|webOS|iPhone|iPod|iPad|BlackBerry/i.test(navigator.userAgent)) {
+  $('#nav').addClass('is-mobile')
+  $('footer').addClass('is-mobile')
+  $('#top-container').addClass('is-mobile')
+}</script></body></html>
